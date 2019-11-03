@@ -20,8 +20,51 @@ app.use(express.static(__dirname + '/public'));
 
 
 app.get("/home", function(req, res) {
-    res.render("home");
+    var signIn = "Sign In";
+    var login = "/login";
+    var home = "#";
+    var studentinfo = "";
+    var paymentinfo = "";
+    var addpayment = "";
+    var reglink = " <a class='nav-link ' href='/register'> Register </a>";
+    res.render("home", { signIn: signIn, login: login, home: home, studentinfo: studentinfo, paymentinfo: paymentinfo, addpayment: addpayment, reglink: reglink });
 });
+
+app.get("/home/signedin/admin", function(req, res) {
+    var signIn = "Welcome";
+    var home = "#";
+    var login = "#";
+    var studentinfo = "<a class='nav-link' href='/adminstudentinfo'>Student Information</a>";
+    var paymentinfo = "<a class='nav-link' href='/paymentinfo'>Paymentinfo</a>";
+    var addpayment = "<a class='nav-link' href='/payform'>Add Payments</a>";
+
+    var reglink = "";
+    res.render("home", { signIn: signIn, login: login, studentinfo: studentinfo, paymentinfo: paymentinfo, addpayment: addpayment, home: home, reglink: reglink });
+});
+
+app.get("/home/signedin/student", function(req, res) {
+    var signIn = "Welcome";
+    var login = "#";
+    var home = "#";
+    var studentinfo = "";
+    var paymentinfo = "";
+    var addpayment = "";
+    var reglink = "<a class='nav-link ' href='/mypayments'> My payments </a>";
+    res.render("home", { signIn: signIn, login: login, studentinfo: studentinfo, paymentinfo: paymentinfo, addpayment: addpayment, home: home, reglink: reglink });
+});
+
+app.get("/mypayments", function(req, res) {
+    mysqlConnection.query("SELECT payments.PaymentId,payments.Month,payments.Amount,student_information.FirstName FROM payments INNER JOIN student_information ON payments.StudentId=student_information.StudentId WHERE student_information.username ='" + req.session.username + "'", function(err, result) {
+        if (err) {
+            console.log(err);
+        } else {
+            res.render("mypayments", { mypayment: result, username: req.session.username });
+        }
+    });
+
+});
+
+
 
 app.get("/login", function(req, res) {
     //shows the login page
@@ -34,23 +77,29 @@ app.post("/login/auth", function(req, res) {
     var username = req.body.username;
     var password = req.body.password;
     if (username && password) {
-        mysqlConnection.query('SELECT*FROM logininfo WHERE UserName = ? AND Password = ?', [username, password], function(err, results) {
+        mysqlConnection.query('SELECT*FROM logininfo WHERE UserName = ? AND Password = ? ', [username, password], function(err, results) {
             if (err) throw err;
             if (results.length > 0) {
+
                 req.session.loggedin = true;
                 req.session.username = username;
-                res.redirect("/home");
+                if (results[0].Admin === 2) {
+                    res.redirect("/home/signedIn/admin");
+                } else {
+                    res.redirect("/home/signedIn/student");
+                }
+
             } else {
+
                 res.send('Incorrect Username and/or Password!');
             }
             res.end();
         });
-        //redirect to home page
     } else {
-        response.send('Please enter Username and Password!');
-        response.end();
+        res.send('Please enter Username and Password!');
+        res.end();
     }
-
+    //redirect to home page
 });
 
 app.get("/register", function(req, res) {
@@ -93,6 +142,7 @@ app.get("/adminstudentinfo", function(req, res) {
 
 app.post("/delete/:id", function(req, res) {
     var id = req.params.id;
+
     mysqlConnection.query("DELETE FROM student_information WHERE StudentId =" + id,
         function(err, result) {
             if (err) {
@@ -167,6 +217,23 @@ app.get("/paymentinfo", function(req, res) {
         }
     })
 });
+
+app.get("/monthlypayments", function(req, res) {
+    res.render("monthlypayments");
+});
+
+app.post("/month", function(req, res) {
+    var month = req.body.month;
+    mysqlConnection.query("SELECT FirstName,MobileNumber,Grade FROM student_information WHERE StudentId not in (SELECT DISTINCT StudentId FROM payments WHERE Month='" + month + "' )", function(err, result) {
+        if (err) {
+            console.log(err);
+        } else {
+            res.render("monthlypayments", { studentpayinfo: result, selectedmonth: month });
+        }
+
+    });
+
+})
 
 // app.get("/search", function(req, res) {
 //     res.render("paymentinfo")

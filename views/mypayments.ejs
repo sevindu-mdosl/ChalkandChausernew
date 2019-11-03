@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Login</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <link rel="stylesheet" href="paymentinfo.css">
+    <link rel="stylesheet" href="/mypayments.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
     <link href="https://fonts.googleapis.com/css?family=Jomolhari&display=swap" rel="stylesheet">
@@ -23,49 +23,26 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-navbar fixed-top">
         <a class="navbar-brand" href="/home ">Chalk & Chauser</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                          <span class="navbar-toggler-icon"></span>
-                        </button>
+                                  <span class="navbar-toggler-icon"></span>
+                                </button>
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
 
-
-
         </div>
     </nav>
-
-    <h1 style="text-align: center">Payment Information</h1>
-
-    <h4>Search for students who havent paid for different months</h4>
-    <form action="/month" method="post">
-        <select class="form-control form-control-sm" name="month">
-                            <option value="January">January</option>
-                            <option value="February">February</option>
-                            <option value="March">March</option>
-                            <option value="April">April</option>
-                            <option value="May">May</option>
-                            <option value="June">June</option>
-                            <option value="July">July</option>
-                            <option value="August">August</option>
-                            <option value="Septembe">September</option>
-                            <option value="October">October</option>
-                            <option value="November">November</option>
-                            <option value="December">December</option>
-                          </select>
-        <button type="submit" class="btn btn-primary btn-sm">Submit</button>
-    </form>
-
-
-
-    <table class="table table-sm table-bordered" id="table">
+    <h1 style="text-align: center">Your Payments:
+        <%=username%>
+    </h1>
+    <table class="table table-sm table-nonfluid table-bordered" id="table">
         <thead class="thead-dark">
             <tr>
                 <!-- <th>Index Number</th> -->
+                <th scope="col">PymentId</th>
                 <th scope="col">First Name</th>
-                <th scope="col">Last Name</th>
                 <th scope="col">Month</th>
                 <th scope="col">Amount</th>
-                <th scope="col">PaymentId</th>
+
 
 
             </tr>
@@ -73,33 +50,29 @@
 
         <tbody>
 
-            <% paymentinfo.forEach(function (payment) { %>
+            <% mypayment.forEach(function (payment) { %>
                 <tr>
+                    <td>
+                        <%= payment.PaymentId %>
 
+                    </td>
 
                     <td>
                         <%= payment.FirstName %>
 
                     </td>
                     <td>
-                        <%= payment.LastName %>
-
-
-                    </td>
-                    <td>
-
                         <%= payment.Month %>
 
 
                     </td>
                     <td>
+
                         <%= payment.Amount %>
 
-                    </td>
-                    <td>
-                        <%= payment.PaymentId %>
 
                     </td>
+
 
 
                 </tr>
@@ -112,4 +85,4 @@
 
 </body>
 
-</html>a
+</html>
